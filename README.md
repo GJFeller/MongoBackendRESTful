@@ -22,7 +22,7 @@ npm install
 After installed all the depencencies, run in the terminal the following command:
 
 ```
-npm start
+node app.js
 ```
 
 Your web service is going to be hosted at [`http://localhost:8080/api`]
