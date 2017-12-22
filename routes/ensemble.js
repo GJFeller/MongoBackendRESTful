@@ -34,6 +34,36 @@ exports.getAllVariables = function (db) {
     }
 }
 
+exports.getSolidVariables = function (db) {
+    return function (req, res) {
+        var ensembleId = req.params.ensembleId;
+        console.log("ensembleId = "+ensembleId);
+        db.collection(variableCollectionString).find({ensembleId: mongojs.ObjectID(ensembleId), type: "solid"}, function (err, docs) {
+            res.json(docs);
+        })
+    }
+}
+
+exports.getSoluteVariables = function (db) {
+    return function (req, res) {
+        var ensembleId = req.params.ensembleId;
+        console.log("ensembleId = "+ensembleId);
+        db.collection(variableCollectionString).find({ensembleId: mongojs.ObjectID(ensembleId), type: "solute"}, function (err, docs) {
+            res.json(docs);
+        })
+    }
+}
+
+exports.getSedimentVariables = function(db) {
+    return function (req, res) {
+        var ensembleId = req.params.ensembleId;
+        console.log("ensembleId = "+ensembleId);
+        db.collection(variableCollectionString).find({ensembleId: mongojs.ObjectID(ensembleId), type: "sediment"}, function (err, docs) {
+            res.json(docs);
+        })
+    }
+}
+
 exports.getTemporalVarData = function (db) {
     return function (req, res) {
         var xIdx = parseInt(req.params.xIdx);

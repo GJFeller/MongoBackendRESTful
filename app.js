@@ -73,6 +73,10 @@ router.get('/getAllVariables', ensemble.getAllVariables(db));
 router.get('/getAllEnsembles', ensemble.getAllEnsembles(db));
 router.get('/getTemporalVarData/:xIdx/:yIdx/:zIdx/:simulationId/:varId/:ensembleId', ensemble.getTemporalVarData(db));
 router.get('/getMultivariateData/:xIdx/:yIdx/:zIdx/:time/:simulationId/:varIdList', ensemble.getMultivariateVarData(db));
+router.get('/getSolidVariables/:ensembleId', ensemble.getSolidVariables(db));
+router.get('/getSoluteVariables/:ensembleId', ensemble.getSoluteVariables(db));
+router.get('/getSedimentVariables/:ensembleId', ensemble.getSedimentVariables(db));
+
 //router.get('/getMultivariateData', ensemble.getMultivariateVarData(db))
 
 
