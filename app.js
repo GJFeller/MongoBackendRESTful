@@ -71,7 +71,7 @@ router.all('/*', function(req, res, next) {
 router.get('/getVariablesEnsemble/:ensembleId', ensemble.getVariablesEnsemble(db));
 router.get('/getAllVariables', ensemble.getAllVariables(db));
 router.get('/getAllEnsembles', ensemble.getAllEnsembles(db));
-router.get('/getTemporalVarData/:xIdx/:yIdx/:zIdx/:simulationId/:varId/:ensembleId', ensemble.getTemporalVarData(db));
+router.get('/getTemporalVarData/:xIdx/:yIdx/:zIdx/:simulationId/:varIdList/:ensembleId', ensemble.getTemporalVarData(db));
 router.get('/getMultivariateData/:xIdx/:yIdx/:zIdx/:time/:simulationId/:varIdList', ensemble.getMultivariateVarData(db));
 router.get('/getSolidVariables/:ensembleId', ensemble.getSolidVariables(db));
 router.get('/getSoluteVariables/:ensembleId', ensemble.getSoluteVariables(db));

@@ -70,7 +70,11 @@ exports.getTemporalVarData = function (db) {
         var yIdx = parseInt(req.params.yIdx);
         var zIdx = parseInt(req.params.zIdx);
         var simulationId = req.params.simulationId;
-        var varId = mongojs.ObjectID(req.params.varId);
+        //var varId = mongojs.ObjectID(req.params.varId);
+        var varIdList = req.params.varIdList.split(',');
+        for(var i = 0; i < varIdList.length; i++) {
+            varIdList[i] = mongojs.ObjectID(varIdList[i]);
+        }
         var ensembleId = req.params.ensembleId;
         //console.log("ensembleId = "+ensembleId);
         // First find the variableId and then find the data
@@ -85,7 +89,7 @@ exports.getTemporalVarData = function (db) {
                 variables: {$filter: {
                     input: '$variables',
                     as: 'variable',
-                    cond: {$eq: ['$$variable.variableId', varId]}
+                    cond: {$in: ['$$variable.variableId', varIdList]}
                 }},
                 time: 1,
                 simulationId: 1,
