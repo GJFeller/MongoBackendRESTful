@@ -148,6 +148,31 @@ exports.getMultivariateVarData = function (db) {
     };
 }
 
+exports.getAllSimulationData = function (db) {
+    return function (req, res) {
+        db.collection(simDataCollectionString).find({}, function (err, docs) {
+            res.json(docs)
+        })
+    }
+}
+
+exports.getCellQuantity = function (db) {
+    return function (req, res) {
+        db.collection(simDataCollectionString).find().sort({"cell.xIdx": -1}).limit(1, function (err, docs) {
+            res.json(docs[0].cell.xIdx);
+        });
+    }
+}
+
+exports.getTimeEnd = function (db) {
+    return function (req, res) {
+        db.collection(simDataCollectionString).find().sort({"time": -1}).limit(1, function (err, docs) {
+            res.json(docs[0].time);
+            //res.json(docs);
+        });
+    }
+}
+
 /*exports.getSimDataFromSimulation = function (db) {
     return function (req, res) {
         var simName = req.params.simName;
