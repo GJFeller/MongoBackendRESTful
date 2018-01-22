@@ -77,8 +77,8 @@ router.get('/getSolidVariables/:ensembleId', ensemble.getSolidVariables(db));
 router.get('/getSoluteVariables/:ensembleId', ensemble.getSoluteVariables(db));
 router.get('/getSedimentVariables/:ensembleId', ensemble.getSedimentVariables(db));
 router.get('/getAllSimData', ensemble.getAllSimulationData(db));
-router.get('/getCellQuantity', ensemble.getCellQuantity(db));
-router.get('/getTimeEnd', ensemble.getTimeEnd(db));
+router.get('/getCellQuantity/:ensembleId', ensemble.getCellQuantity(db));
+router.get('/getTimeEnd/:ensembleId', ensemble.getTimeEnd(db));
 
 //router.get('/getMultivariateData', ensemble.getMultivariateVarData(db))
 
