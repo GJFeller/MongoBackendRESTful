@@ -176,6 +176,51 @@ exports.getTimeEnd = function (db) {
     }
 }
 
+exports.getSpatialData = function (db) {
+    return function (req, res) {
+        //var body = req.varIdList;
+        //console.log("aeHOOOOOOOOOOOOO");
+        //console.log(req.params.varIdList.split(','));
+        //var xIdx = parseInt(req.params.xIdx);
+        //var yIdx = parseInt(req.params.yIdx);
+        //var zIdx = parseInt(req.params.zIdx);
+        var time = parseFloat(req.params.time);
+        var simulationId = req.params.simulationId;
+        var varIdList = req.params.varIdList.split(',');
+        for(var i = 0; i < varIdList.length; i++) {
+            varIdList[i] = mongojs.ObjectID(varIdList[i]);
+        }
+        console.log("blablabla");
+        console.log(varIdList);
+
+        db.collection(simDataCollectionString).aggregate([
+            { $match: {
+                simulationId: simulationId,
+                /*"cell.xIdx": xIdx,
+                "cell.yIdx": yIdx,
+                "cell.zIdx": zIdx,*/
+                time: time
+            }},
+            { $project: {
+                variables: {$filter: {
+                    input: '$variables',
+                    as: 'variable',
+                    cond: {$in: ['$$variable.variableId', varIdList]}
+                }},
+                time: 1,
+                simulationId: 1,
+                cell: 1,
+                _id: 0
+            }}
+        ], function (err, docs) {
+            console.log(err);
+            res.json(docs);
+        });
+        //res.json([]);
+    };
+}
+
+
 /*exports.getSimDataFromSimulation = function (db) {
     return function (req, res) {
         var simName = req.params.simName;
