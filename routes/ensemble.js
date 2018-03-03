@@ -93,6 +93,7 @@ exports.getTemporalVarData = function (db) {
                 }},
                 time: 1,
                 simulationId: 1,
+                cell: 1,
                 _id: 0
             }}
         ], function (err, docs) {
