@@ -165,6 +165,11 @@ exports.getMultivariateVarData = function (db) {
             }}
         ], function (err, docs) {
             console.log(err);
+            var newDocs = [];
+            var newDocsObj = {};
+            newDocsObj.time = time;
+            newDocsObj.simulationId = simulationId;
+            newDocsObj.variables = [];
             docs.sort(function(a,b) { return a.time == b.time ? 0 : +(a.time > b.time) || -1; });
             var timesteps = docs.map(a => a.time);
             console.log(timesteps);
@@ -182,10 +187,18 @@ exports.getMultivariateVarData = function (db) {
                 console.log("varValues");
                 console.log(varValues);
                 if(timesteps.length === varValues.length) {
-                    var splineValue = spline(63, timesteps, varValues);
+                    var splineValue = spline(time, timesteps, varValues);
                     console.log("Value at time 63 for var="+varStringList[varIdx]+" is "+splineValue);
+                    var variableObj = {};
+                    variableObj.variableId = varStringList[varIdx];
+                    variableObj.value = splineValue;
+                    newDocsObj.variables.push(variableObj);
                 }
             }
+            newDocs.push(newDocsObj);
+            console.log(newDocsObj);
+            res.json(newDocsObj);
+
         });
 
         /**
@@ -200,7 +213,7 @@ exports.getMultivariateVarData = function (db) {
          * }
          * 
          */
-        db.collection(simDataCollectionString).aggregate([
+        /*db.collection(simDataCollectionString).aggregate([
             { $match: {
                 simulationId: simulationId,
                 "cell.xIdx": xIdx,
@@ -221,7 +234,7 @@ exports.getMultivariateVarData = function (db) {
         ], function (err, docs) {
             console.log(err);
             res.json(docs);
-        });
+        });*/
         //res.json([]);
     };
 }
