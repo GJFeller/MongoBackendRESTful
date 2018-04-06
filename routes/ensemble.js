@@ -278,19 +278,21 @@ exports.getSpatialData = function (db) {
         var time = parseFloat(req.params.time);
         var simulationId = req.params.simulationId;
         var varIdList = req.params.varIdList.split(',');
+        var varStringList = varIdList.slice();
         for(var i = 0; i < varIdList.length; i++) {
             varIdList[i] = mongojs.ObjectID(varIdList[i]);
         }
         console.log("blablabla");
         console.log(varIdList);
 
+
         db.collection(simDataCollectionString).aggregate([
             { $match: {
-                simulationId: simulationId,
+                simulationId: simulationId
                 /*"cell.xIdx": xIdx,
                 "cell.yIdx": yIdx,
                 "cell.zIdx": zIdx,*/
-                time: time
+                //time: time
             }},
             { $project: {
                 variables: {$filter: {
@@ -305,7 +307,85 @@ exports.getSpatialData = function (db) {
             }}
         ], function (err, docs) {
             console.log(err);
-            res.json(docs);
+            var newDocs = [];
+            var promiseList = [];
+            var cells = [];
+            docs.forEach(function (element) {
+                var aCell = element.cell;
+                var result = cells.filter(cell => cell.xIdx === aCell.xIdx && cell.yIdx === aCell.yIdx && cell.zIdx === aCell.zIdx);
+                if(result.length == 0) {
+                    cells.push(aCell);
+                }
+            });
+            cells.forEach(function (aCell) {
+                promiseList.push(new Promise(function(resolve, reject) {
+                    db.collection(simDataCollectionString).aggregate([
+                        { $match: {
+                            simulationId: simulationId,
+                            "cell.xIdx": aCell.xIdx,
+                            "cell.yIdx": aCell.yIdx,
+                            "cell.zIdx": aCell.zIdx,
+                        }},
+                        { $project: {
+                            variables: {$filter: {
+                                input: '$variables',
+                                as: 'variable',
+                                cond: {$in: ['$$variable.variableId', varIdList]}
+                            }},
+                            time: 1,
+                            simulationId: 1,
+                            cell: 1,
+                            _id: 0
+                        }}
+                    ], function (err, docs) {
+                        console.log(err);
+                        resolve(docs);
+                    });
+                }));
+            });
+            Promise.all(promiseList)
+                .then(function(values) {
+                    console.log(values);
+                    values.forEach(function(cellData) {
+                        var newDocsObj = {};
+                        newDocsObj.time = time;
+                        newDocsObj.simulationId = simulationId;
+                        newDocsObj.cell = cellData[0].cell;
+                        newDocsObj.variables = [];
+                        cellData.sort(function(a,b) { return a.time == b.time ? 0 : +(a.time > b.time) || -1; });
+                        var timesteps = cellData.map(a => a.time);
+                        console.log(timesteps);
+                        for(var varIdx = 0; varIdx < varStringList.length; varIdx++) {
+                            var varValues = [];
+                            cellData.forEach(cellElement => {
+                                var varObj = cellElement.variables.filter(function(variableElement){
+                                    //console.log(variable.variableId);
+                                    return variableElement.variableId == varStringList[varIdx];
+                                });
+                                if(varObj.length > 0) {
+                                    varValues.push(varObj[0].value);
+                                }
+                            });
+                            console.log("varValues");
+                            console.log(varValues);
+                            if(timesteps.length === varValues.length) {
+                                var splineValue = spline(time, timesteps, varValues);
+                                console.log("Value at time 63 for var="+varStringList[varIdx]+" is "+splineValue);
+                                var variableObj = {};
+                                variableObj.variableId = varStringList[varIdx];
+                                variableObj.value = splineValue;
+                                newDocsObj.variables.push(variableObj);
+                            }
+                        }
+                        newDocs.push(newDocsObj);
+                    });
+                    res.json(newDocs);
+                })
+                .catch(function (err) {
+                    console.log("Erro nas promises"); 
+                    console.log(err); 
+                });
+            //res.json(docs);
         });
         //res.json([]);
     };
