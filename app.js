@@ -19,7 +19,8 @@ if(isLocal) {
     connectionString = 'ensembleDataSets';
 }
 else {
-    connectionString = "mongodb://admin:admin@ensemble-shard-00-00-38uq3.mongodb.net:27017,ensemble-shard-00-01-38uq3.mongodb.net:27017,ensemble-shard-00-02-38uq3.mongodb.net:27017/ensembleDataSets?ssl=true&replicaSet=Ensemble-shard-0&authSource=admin"
+    connectionString = "mongodb://guest:guest@ds147659.mlab.com:47659/ensembledatasets"
+    //connectionString = "mongodb://admin:admin@ensemble-shard-00-00-38uq3.mongodb.net:27017,ensemble-shard-00-01-38uq3.mongodb.net:27017,ensemble-shard-00-02-38uq3.mongodb.net:27017/ensembleDataSets?ssl=true&replicaSet=Ensemble-shard-0&authSource=admin"
 }
 
 var db = mongojs(connectionString);
